@@ -1,0 +1,57 @@
+
+void Merge(FILE* outputMerge, int head, int mid, int end, char merge[])
+{
+    int size = end - head + 1;
+    char *temp = (char*)malloc(size * sizeof(char));
+    int i, j, k;
+    int p1 = head;
+    int p2 = mid + 1;
+    if(temp != NULL)
+    {
+        for(i = 0; i < size; i++)
+        {
+            if(p1 != mid + 1 && p2 != end + 1){
+                if(merge[p1] < merge[p2])
+                {
+                    temp[i] = merge[p1];
+                    p1++;
+                }
+                else
+                {
+                    temp[i] = merge[p2];
+                    p2++;
+                }
+            }
+            else
+            {
+                if(p1 == mid + 1)
+                {
+                    temp[i] = merge[p2];
+                    p2++;
+                }
+                else
+                {
+                    temp[i] = merge[p1];
+                    p1++;
+                }
+            }
+        }
+    }
+    for(j = 0, k = head; j < size; j++, k++)
+    {
+        merge[k] = temp[j];
+    }
+    free(temp);
+}
+
+void MergeSort(FILE* outputMerge, char merge[], int head, int end, int n)
+{
+    int mid;
+    if(head < end)
+    {
+        mid = (head + end)/2;
+        MergeSort(outputMerge, merge, head, mid, n);
+        MergeSort(outputMerge, merge, mid + 1, end, n);
+        Merge(outputMerge, head, mid, end, merge);
+    }
+}
