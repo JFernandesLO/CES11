@@ -43,16 +43,8 @@ void BubbleSort(char** bubble, int numberOfStrings, int *countB)
 /*------------------------------------------------------------------------------------------------*/
 
 /* funcao merge do algoritmo merge sort fornecido pelo professor e adaptado para ordenar strings */
-void Merge(char** merge, int head, int end, int numberOfStrings, int* length, int *countM)
+void Merge(char** merge, int head, int end, int numberOfStrings, int *countM, char** temp)
 {
-    /* variavel usada para loops for */
-    int n = 0;
-    /* alocacao de memoria para matriz temporaria das strings */
-    char** temp = (char**)malloc(numberOfStrings * sizeof(char*));
-    for( ; n < numberOfStrings; n++)
-    {
-        temp[n] = (char*)malloc(50 * sizeof(char));
-    }
     /* valor arredondado correspondente a posicao na metade do vetor */
     int mid = (head + end) / 2;
     /* percorre temp */
@@ -67,18 +59,12 @@ void Merge(char** merge, int head, int end, int numberOfStrings, int* length, in
     {
         if(compare(merge[j], merge[k], countM) <= 0)
         {
-            for(n = 0; n < length[j]; n++)
-            {
-                temp[i][n] = merge[j][n];
-            }
+            temp[i] = merge[j];
             j++;
         }
         else
         {
-            for(n = 0; n < length[k]; n++)
-            {
-                temp[i][n] = merge[k][n];
-            }
+            temp[i] = merge[k];
             k++;
         }
         i++;
@@ -87,10 +73,7 @@ void Merge(char** merge, int head, int end, int numberOfStrings, int* length, in
     /* se sobrou algo a esquerda copiar para temp */
     while(j <= mid)
     {
-        for(n = 0; n < length[j]; n++)
-        {
-            temp[i][n] = merge[j][n];
-        }
+        temp[i]= merge[j];
         i++;
         j++;
     }
@@ -98,10 +81,7 @@ void Merge(char** merge, int head, int end, int numberOfStrings, int* length, in
     /* se sobrou algo a direita copiar para temp */
     while(k <= end)
     {
-        for(n = 0; n < length[k]; n++)
-        {
-            temp[i][n] = merge[k][n];
-        }
+        temp[i] = merge[k];
         i++;
         k++;
     }
@@ -109,52 +89,39 @@ void Merge(char** merge, int head, int end, int numberOfStrings, int* length, in
     /*merge recebe temp */
     for(i = head; i <= end; i++)
     {
-        for(n = 0; n < length[i]; n++){
-            merge[i][n] = temp[i][n];
-        }
+        merge[i] = temp[i];
     }
-
-    /* desalocacao de memoria de temp */
-    for (n = 0 ; n < numberOfStrings; n++) {
-        free(temp[n]);
-    }
-    free(temp);
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 /* funcao mergesort fornecida pelo professor */
-void MergeSort(char** merge, int head, int end, int numberOfStrings, int* length, int *countM){
+void MergeSort(char** merge, int head, int end, int numberOfStrings, int *countM, char** temp){
     int mid;
     if(head < end)
     {
         /* dividir ao meio */
         mid = (head + end) / 2;      
         /* ordenar a esquerda */    
-        MergeSort(merge, head, mid, numberOfStrings, length, countM);
+        MergeSort(merge, head, mid, numberOfStrings, countM, temp);
         /* ordenar a direita */  
-        MergeSort(merge, mid + 1, end, numberOfStrings, length, countM);  
+        MergeSort(merge, mid + 1, end, numberOfStrings, countM, temp);  
         /* mesclar as duas metades */
-        Merge(merge, head, end, numberOfStrings, length, countM);  
+        Merge(merge, head, end, numberOfStrings, countM, temp);  
     }
 }
 
 /*------------------------------------------------------------------------------------------------*/
 
 /* funcao partition do algoritmo quick sort fornecido pelo professor e adaptado para ordenar strings*/
-int Partition(char** quick, int head, int end, int* length, int *countQ){
+int Partition(char** quick, int head, int end, int *countQ){
     int left = head + 1;
     int rght = end;
     char* pvt = (char*)malloc(50 * sizeof(char));
     char* aux;
-    /* variavel usada para loops for */
-    int n = 0;
 
     /* pivo eh escolhido como a primeira linha da matriz */
-    for( ; n < length[head]; n++)
-    {
-        pvt[n] = quick[head][n];
-    }
+        strcpy(pvt, quick[head]);
 
     do
     {
@@ -177,9 +144,8 @@ int Partition(char** quick, int head, int end, int* length, int *countQ){
         /* caso contrario terminar a repeticao */
     } while(left < rght);
     
-    aux = quick[head];
     quick[head] = quick[rght];
-    quick[rght] = aux;
+    strcpy(quick[rght], pvt);
 
     free(pvt);
 
@@ -188,15 +154,15 @@ int Partition(char** quick, int head, int end, int* length, int *countQ){
 
 /*------------------------------------------------------------------------------------------------*/
 
-void QuickSort(char** quick, int head, int end, int* length, int *countQ)
+void QuickSort(char** quick, int head, int end, int *countQ)
 {
     /* posicao do pivo */
     int pvt;
     if(end > head)
     {
-        pvt = Partition(quick, head, end, length, countQ);
-        QuickSort(quick, head, pvt - 1, length, countQ);
-        QuickSort(quick, pvt + 1, end, length, countQ);
+        pvt = Partition(quick, head, end, countQ);
+        QuickSort(quick, head, pvt - 1,countQ);
+        QuickSort(quick, pvt + 1, end, countQ);
     }
 }
 
@@ -251,32 +217,25 @@ int main(){
     char** bubble = (char**)malloc(numberOfStrings * sizeof(char*));
     char** merge = (char**)malloc(numberOfStrings * sizeof(char*));
     char** quick = (char**)malloc(numberOfStrings * sizeof(char*));
-    /* variavel para contar quantos caracteres em cada string */
-    int* length = (int*)malloc((numberOfStrings + 2) * sizeof(int));
+    /* matriz temporaria para uso na funcao merge */
+    char** temp = (char**)malloc(numberOfStrings * sizeof(char*));
 
     /* variavel para contar as linhas */   
     int i = 0;
     for( ; i < numberOfStrings; i++)
     {
-        /* alocando memoria para as matrizes */
-        bubble[i] = (char*)malloc(50 * sizeof(char));
-        merge[i] = (char*)malloc(50 * sizeof(char));
-        quick[i] = (char*)malloc(50 * sizeof(char));
         /* leitura das linhas da entrada */
         fgets(line, sizeof(line), input);
         
-        /* esse loop pega cada carcater lido em cada string ate o enter e armazena cada um em uma coluna das matrizes */
-        int n = 0;
-        while(line[n] != '\n')
-        {
-            bubble[i][n] = line[n];
-            merge[i][n] = line[n];
-            quick[i][n] = line[n];
-            n++;
-        }
-
-        /* o valor do comprimento de cada string eh armazenado em length */
-        length[i] = n;
+        /* alocando memoria para as matrizes */
+        bubble[i] = (char*)malloc((strlen(line) + 2) * sizeof(char));
+        merge[i] = (char*)malloc((strlen(line) + 2) * sizeof(char));
+        quick[i] = (char*)malloc((strlen(line) + 2) * sizeof(char));
+        temp[n] = (char*)malloc((strlen(line) + 2) * sizeof(char));
+        
+        strcpy(bubble[i], line);
+        strcpy(merge[i], line);
+        strcpy(quick[i], line);
     }
 
     /* variaveis para contar o numero de comparacoes feitas em cada algoritmo B, M e Q para Bubble, Merge e Quick Sort*/
@@ -298,7 +257,7 @@ int main(){
     fprintf(outputBubble,"Tempo de execução: %f segundos\n\n--------------------------------------------------\n", delta_tB);
 
     startM = clock();
-    MergeSort(merge, 0, numberOfStrings - 1, numberOfStrings, length, &countM);
+    MergeSort(merge, 0, numberOfStrings - 1, numberOfStrings, &countM, temp);
     endM = clock();
     delta_tM = (endM - startM) / (float) CLOCKS_PER_SEC;
 
@@ -306,7 +265,7 @@ int main(){
     fprintf(outputMerge,"Tempo de execução: %f segundos\n\n--------------------------------------------------\n", delta_tM);
 
     startQ = clock();
-    QuickSort(quick, 0, numberOfStrings - 1, length, &countQ);
+    QuickSort(quick, 0, numberOfStrings - 1, &countQ);
     endQ = clock();
     delta_tQ = (endQ - startQ) / (float) CLOCKS_PER_SEC;
 
@@ -333,13 +292,13 @@ int main(){
         free(bubble[k]);
         free(merge[k]);
         free(quick[k]);
+        free(temp[k]);
     }
 
     free(bubble);
     free(merge);
     free(quick);
-    
-    free(length);
+    free(temp);
     
     fclose(input);
     fclose(outputBubble);
