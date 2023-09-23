@@ -86,7 +86,7 @@ void Merge(char** merge, int head, int end, int numberOfStrings, int *countM, ch
         k++;
     }
 
-    /*merge recebe temp */
+    /* merge recebe temp */
     for(i = head; i <= end; i++)
     {
         merge[i] = temp[i];
@@ -121,7 +121,7 @@ int Partition(char** quick, int head, int end, int *countQ){
     char* aux;
 
     /* pivo eh escolhido como a primeira linha da matriz */
-        strcpy(pvt, quick[head]);
+    strcpy(pvt, quick[head]);
 
     do
     {
