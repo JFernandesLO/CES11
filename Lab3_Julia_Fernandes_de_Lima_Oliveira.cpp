@@ -298,15 +298,9 @@ int main(){
     int l = 0;
     for( ; k < numberOfStrings; k++)
     {
-        for(l = 0; l < length[k]; l++)
-        {
-            fprintf(outputBubble, "%c", bubble[k][l]);
-            fprintf(outputMerge, "%c", merge[k][l]);
-            fprintf(outputQuick, "%c", quick[k][l]);
-        }
-        fprintf(outputBubble, "\n");
-        fprintf(outputMerge, "\n");
-        fprintf(outputQuick, "\n");
+        fprintf(outputBubble, "%s", bubble[k]);
+        fprintf(outputMerge, "%s", merge[k]);
+        fprintf(outputQuick, "%s", quick[k]);
     }
 
     for (k = 0; k < numberOfStrings; k++) {
