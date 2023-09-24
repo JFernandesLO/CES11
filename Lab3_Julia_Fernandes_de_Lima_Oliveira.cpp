@@ -141,11 +141,11 @@ void MergeSort(char** merge, int head, int end, int numberOfStrings, int *countM
 int Partition(char** quick, int head, int end, int *countQ){
     int left = head + 1;
     int rght = end;
-    char* pvt = (char*)malloc(50 * sizeof(char));
+    char* pvt;
     char* aux;
 
     /* pivo eh escolhido como a primeira linha da matriz */
-    strcpy(pvt, quick[head]);
+    pvt = quick[head];
 
     do
     {
@@ -169,9 +169,7 @@ int Partition(char** quick, int head, int end, int *countQ){
     } while(left < rght);
     
     quick[head] = quick[rght];
-    strcpy(quick[rght], pvt);
-
-    free(pvt);
+    quick[rght] = pvt;
 
     return rght;
 }
