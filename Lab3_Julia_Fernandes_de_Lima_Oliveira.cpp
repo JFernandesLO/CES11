@@ -301,7 +301,8 @@ int main(){
         fprintf(outputQuick, "%s", quick[k]);
     }
 
-    for (k = 0; k < numberOfStrings; k++) {
+    for (k = 0; k < numberOfStrings; k++)
+    {
         free(bubble[k]);
         free(merge[k]);
         free(quick[k]);
